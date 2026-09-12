@@ -1,5 +1,6 @@
 package com.example.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -50,8 +52,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -699,19 +704,37 @@ fun DoctorDialog(
         containerColor = HydraSurface,
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.Security,
-                    contentDescription = null,
-                    tint = HydraCyan,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "HydraNet Doctor Diagnostics",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
-                    color = HydraTextPrimary
-                )
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Brush.linearGradient(listOf(HydraPurple, HydraCyan)))
+                        .padding(1.5.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.hydranet_logo),
+                        contentDescription = "HydraNet Logo",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(7.dp))
+                    )
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+                Column {
+                    Text(
+                        text = "HydraNet Diagnostics",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        color = HydraTextPrimary
+                    )
+                    Text(
+                        text = "System Doctor & Integrity",
+                        fontSize = 11.sp,
+                        fontFamily = FontFamily.Monospace,
+                        color = HydraCyan
+                    )
+                }
             }
         },
         text = {

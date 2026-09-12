@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -60,11 +61,14 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.R
 import com.example.data.ScanEvent
 import com.example.data.model.FindingEntity
 import com.example.data.model.ScopeEntity
@@ -74,6 +78,7 @@ import com.example.ui.theme.HydraBgDark
 import com.example.ui.theme.HydraBorder
 import com.example.ui.theme.HydraBorderActive
 import com.example.ui.theme.HydraCyan
+import com.example.ui.theme.HydraCyanMuted
 import com.example.ui.theme.HydraPurple
 import com.example.ui.theme.HydraRed
 import com.example.ui.theme.HydraSurface
@@ -148,6 +153,87 @@ fun GuidedScreen(
         contentPadding = PaddingValues(top = 16.dp, bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        // HydraNet Brand Header with Logo
+        item {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = HydraSurface),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, HydraBorder, RoundedCornerShape(12.dp))
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(14.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(72.dp)
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(
+                                Brush.linearGradient(
+                                    listOf(HydraPurple, HydraViolet, HydraCyan)
+                                )
+                            )
+                            .padding(2.dp)
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.hydranet_logo),
+                            contentDescription = "HydraNet Android Edition Logo",
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(12.dp))
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(14.dp))
+
+                    Column(modifier = Modifier.weight(1f)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = "HYDRANET",
+                                fontWeight = FontWeight.Black,
+                                fontSize = 18.sp,
+                                letterSpacing = 1.2.sp,
+                                color = HydraCyan
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(4.dp))
+                                    .background(HydraPurple.copy(alpha = 0.2f))
+                                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                            ) {
+                                Text(
+                                    text = "v0.1-alpha",
+                                    fontFamily = FontFamily.Monospace,
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = HydraPurple
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(3.dp))
+                        Text(
+                            text = "Mobile Offensive & Defensive Security Engine",
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 12.sp,
+                            color = HydraTextPrimary
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = "Scope-Locked • SHA-256 Chained • Legal Refusal",
+                            fontSize = 10.sp,
+                            fontFamily = FontFamily.Monospace,
+                            color = HydraAndroidGreen
+                        )
+                    }
+                }
+            }
+        }
+
         // Scope Definition Hero Card
         item {
             Card(

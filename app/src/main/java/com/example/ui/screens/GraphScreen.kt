@@ -48,6 +48,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -239,15 +240,16 @@ fun GraphScreen(
             }
 
             // Interactive Overlaid Node Labels
+            val localDensity = LocalDensity.current
             nodes.forEach { node ->
-                val nx = (node.x * canvasWidth).toInt()
-                val ny = (node.y * canvasHeight).toInt()
+                val xDp = with(localDensity) { (node.x * canvasWidth).toDp() }
+                val yDp = with(localDensity) { (node.y * canvasHeight).toDp() }
 
                 Box(
                     modifier = Modifier
                         .padding(
-                            start = (nx / density).dp - 30.dp,
-                            top = (ny / density).dp + 16.dp
+                            start = (xDp - 30.dp).coerceAtLeast(4.dp),
+                            top = (yDp + 16.dp).coerceAtMost(maxHeight - 24.dp)
                         )
                         .clip(RoundedCornerShape(4.dp))
                         .background(HydraBgDark.copy(alpha = 0.85f))

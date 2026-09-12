@@ -10,6 +10,7 @@ import com.example.data.model.AuditEntryEntity
 import com.example.data.model.FindingEntity
 import com.example.data.model.ScopeEntity
 import com.example.data.model.VaultItemEntity
+import com.example.engine.AuditAnchorEngine
 import com.example.engine.ChainVerificationResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
