@@ -1,0 +1,6 @@
+{
+  "name": "HydraNet",
+  "description": "Mobile security assessment, Wi-Fi audit, BLE scanning, and defense platform with consent-gated scope verification.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

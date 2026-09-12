@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">HydraNet</string>
+    <string name="guided_mode">Guided</string>
+    <string name="console_mode">Console</string>
+    <string name="graph_mode">Graph</string>
+    <string name="define_scope">Define Your Scope</string>
+    <string name="network_ssid">Network SSID</string>
+    <string name="auth_checkbox">I own this network or have written authorization to test it.</string>
+    <string name="continue_btn">Continue</string>
+    <string name="cancel_btn">Cancel</string>
+    <string name="learn_authorized">Learn what "authorized" means</string>
+    <string name="cd_scan_progress">Scan progress</string>
+    <string name="cd_finding_severity">Finding severity</string>
+</resources>
