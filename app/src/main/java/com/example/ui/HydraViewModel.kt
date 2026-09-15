@@ -11,6 +11,8 @@ import com.example.data.model.FindingEntity
 import com.example.data.model.ScopeEntity
 import com.example.data.model.VaultItemEntity
 import com.example.engine.AuditAnchorEngine
+import com.example.engine.CarKaliDeviceFingerprint
+import com.example.engine.CarKaliEngine
 import com.example.engine.ChainVerificationResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -359,6 +361,9 @@ class HydraViewModel(application: Application) : AndroidViewModel(application) {
                 appendTerminalLine("  scope                                - Print active declared scope", TerminalLineType.OUTPUT)
                 appendTerminalLine("  scope declare <ssid>                 - Set declared scope SSID", TerminalLineType.OUTPUT)
                 appendTerminalLine("  scan <module> [target]               - Run security module", TerminalLineType.OUTPUT)
+                appendTerminalLine("  carkali fingerprint                 - Run automotive device fingerprint audit", TerminalLineType.OUTPUT)
+                appendTerminalLine("  carkali verify <pkg>                - Fail-closed package manifest verify", TerminalLineType.OUTPUT)
+                appendTerminalLine("  carkali json                        - Dump Car-Kali device JSON schema", TerminalLineType.OUTPUT)
                 appendTerminalLine("  audit tail                           - Show last 5 hash-chained entries", TerminalLineType.OUTPUT)
                 appendTerminalLine("  audit verify                         - Verify SHA-256 chain & Merkle root", TerminalLineType.OUTPUT)
                 appendTerminalLine("  vault list                           - List encrypted post-ex artifacts", TerminalLineType.OUTPUT)
@@ -413,6 +418,63 @@ class HydraViewModel(application: Application) : AndroidViewModel(application) {
             }
             "panic" -> {
                 openPanicDialog()
+            }
+            "fingerprint", "carkali" -> {
+                val sub = tokens.getOrNull(1)?.lowercase() ?: "fingerprint"
+                when (sub) {
+                    "verify" -> {
+                        val pkg = tokens.getOrNull(2) ?: "nethunter-rootless"
+                        val res = CarKaliEngine.verifySyntheticPackage(pkg)
+                        if (res.isVerified) {
+                            appendTerminalLine("CARKALI PACKAGE: [PASS] ${res.message}", TerminalLineType.SUCCESS)
+                        } else {
+                            appendTerminalLine("CARKALI PACKAGE: [FAIL-CLOSED] ${res.message}", TerminalLineType.ERROR)
+                        }
+                        res.filesChecked.forEach {
+                            appendTerminalLine("  - ${it.path}: [${it.status}] ${it.sha256}", TerminalLineType.OUTPUT)
+                        }
+                    }
+                    "inventory", "fingerprint", "inspect" -> {
+                        val fp = CarKaliEngine.generateFingerprint(getApplication())
+                        appendTerminalLine("Car-Kali Hardware Fingerprint (Device Audit):", TerminalLineType.SUCCESS)
+                        appendTerminalLine("  Manufacturer : ${fp.manufacturer}", TerminalLineType.OUTPUT)
+                        appendTerminalLine("  Model        : ${fp.model} (${fp.brand})", TerminalLineType.OUTPUT)
+                        appendTerminalLine("  Platform/SoC : ${fp.board} / ${fp.hardware}", TerminalLineType.OUTPUT)
+                        appendTerminalLine("  Architecture : ${fp.abi}", TerminalLineType.OUTPUT)
+                        appendTerminalLine("  Android/SDK  : Android ${fp.android} (SDK ${fp.sdk})", TerminalLineType.OUTPUT)
+                        appendTerminalLine("  Build ID     : ${fp.build}", TerminalLineType.OUTPUT)
+                        appendTerminalLine("  Slot Suffix  : ${fp.slot}", TerminalLineType.OUTPUT)
+                        appendTerminalLine("  VerifiedBoot : ${fp.avb}", TerminalLineType.OUTPUT)
+                        appendTerminalLine("  Bootloader   : ${fp.bootloader}", TerminalLineType.OUTPUT)
+                        appendTerminalLine("  SELinux      : ${fp.selinux}", TerminalLineType.OUTPUT)
+                        appendTerminalLine("  Automotive   : ${if (fp.isAutomotive) "YES (Automotive Head Unit)" else "Handheld Device"}", TerminalLineType.OUTPUT)
+                        appendTerminalLine("  Kernel       : ${fp.kernel.take(65)}", TerminalLineType.OUTPUT)
+                        appendTerminalLine("  Inventory Log: ${if (fp.verifiedProfile) "Verified Device Profile Matched" else "Unknown profile -> Fail-closed Inventory-Only Mode"}", if (fp.verifiedProfile) TerminalLineType.SUCCESS else TerminalLineType.WARN)
+
+                        // Anchor in cryptographic audit trail
+                        viewModelScope.launch {
+                            repository.appendAudit(
+                                action = "CARKALI_FINGERPRINT",
+                                operator = "Operator",
+                                scopeId = activeScope.value?.id ?: "local-device",
+                                target = "${fp.manufacturer} ${fp.model} (${fp.abi})",
+                                moduleId = "com.carkali.fingerprint",
+                                result = if (fp.verifiedProfile) "VERIFIED_PROFILE" else "INVENTORY_ONLY_FALLBACK",
+                                rawCommand = "carkali fingerprint --abi ${fp.abi} --avb ${fp.avb}"
+                            )
+                        }
+                    }
+                    "json" -> {
+                        val fp = CarKaliEngine.generateFingerprint(getApplication())
+                        val json = CarKaliEngine.toJson(fp)
+                        json.lines().forEach { line ->
+                            appendTerminalLine(line, TerminalLineType.OUTPUT)
+                        }
+                    }
+                    else -> {
+                        appendTerminalLine("Usage: carkali [fingerprint | verify <pkg> | json]", TerminalLineType.WARN)
+                    }
+                }
             }
             else -> {
                 appendTerminalLine("Unknown command: '$command'. Type 'help' for options.", TerminalLineType.ERROR)
@@ -485,6 +547,16 @@ class HydraViewModel(application: Application) : AndroidViewModel(application) {
                 title = "Loot Vault Encrypted Store",
                 status = true,
                 detail = "ChaCha20-Poly1305 / Base64 secure room vault operational."
+            )
+        )
+
+        // 7. Car-Kali Automotive & Hardware Fingerprint
+        val fp = CarKaliEngine.generateFingerprint(getApplication())
+        checks.add(
+            DoctorCheck(
+                title = "Hardware & Boot Audit (${fp.abi})",
+                status = true,
+                detail = "${fp.manufacturer} ${fp.model} | AVB: ${fp.avb} | SELinux: ${fp.selinux} | Automotive: ${fp.isAutomotive}"
             )
         )
 

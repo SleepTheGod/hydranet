@@ -83,6 +83,8 @@ fun ConsoleScreen(
         "help",
         "doctor",
         "scope",
+        "carkali fingerprint",
+        "carkali verify",
         "audit verify",
         "audit tail",
         "scan com.hydranet.wifi_audit",
