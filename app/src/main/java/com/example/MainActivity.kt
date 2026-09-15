@@ -123,6 +123,7 @@ fun HydraMainApp(viewModel: HydraViewModel) {
                         viewModel.executeScan("com.hydranet.wifi_audit", target)
                     }
                 )
+                3 -> com.example.ui.chat.ChatScreen()
             }
         }
 

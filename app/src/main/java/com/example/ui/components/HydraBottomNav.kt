@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Hub
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Terminal
@@ -117,6 +118,35 @@ fun HydraBottomNav(
                     text = stringResource(R.string.graph_mode),
                     fontFamily = FontFamily.Monospace,
                     fontWeight = if (selectedTab == 2) FontWeight.Bold else FontWeight.Normal,
+                    fontSize = 11.sp
+                )
+            },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = HydraCyan,
+                selectedTextColor = HydraCyan,
+                indicatorColor = HydraBgDark,
+                unselectedIconColor = HydraTextMuted,
+                unselectedTextColor = HydraTextMuted
+            )
+        )
+
+        // Chat
+        NavigationBarItem(
+            selected = selectedTab == 3,
+            onClick = { onTabSelected(3) },
+            modifier = Modifier.testTag("tab_chat"),
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Chat,
+                    contentDescription = stringResource(R.string.chat_mode),
+                    modifier = Modifier.size(22.dp)
+                )
+            },
+            label = {
+                Text(
+                    text = stringResource(R.string.chat_mode),
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = if (selectedTab == 3) FontWeight.Bold else FontWeight.Normal,
                     fontSize = 11.sp
                 )
             },
